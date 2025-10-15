@@ -2,12 +2,14 @@ package com.application.cooperfilme.model.entity;
 
 import com.application.cooperfilme.enums.Cargo;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Transient;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,38 @@ import java.util.stream.Collectors;
 public class Usuario implements UserDetails {
 
     private static final long serialVersionUID = 1L;
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nome;
+
+    private String email;
+
+    private String campoSenha;
+
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String confirmarSenha;
+
+    @Enumerated(EnumType.STRING)
+    private Cargo cargo;
+
+    public Usuario() {
+    }
+
+    public Usuario(String nome, String email, String campoSenha, Cargo cargo) {
+        this.nome = nome;
+        this.email = email;
+        this.campoSenha = campoSenha;
+        this.cargo = cargo;
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     public String getNome() {
         return nome;
@@ -59,34 +93,6 @@ public class Usuario implements UserDetails {
     }
 
     public void setCargo(Cargo cargo) {
-        this.cargo = cargo;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String nome;
-
-    private String email;
-
-    private String campoSenha;
-
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String confirmarSenha;
-
-    @Enumerated(EnumType.STRING)
-    private Cargo cargo;
-
-    public Usuario() {
-    }
-
-    public Usuario(String nome, String email, String campoSenha, Cargo cargo) {
-        this.nome = nome;
-        this.email = email;
-        this.campoSenha = campoSenha;
-        //this.confirmarSenha = confirmarSenha;
         this.cargo = cargo;
     }
 
