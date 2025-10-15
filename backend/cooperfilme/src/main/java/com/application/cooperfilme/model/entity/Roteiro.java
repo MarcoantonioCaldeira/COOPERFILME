@@ -65,6 +65,9 @@ public class Roteiro {
     @ToString.Exclude
     private List<Votacao> votacoes = new ArrayList<>();
 
+    public Roteiro() {
+    }
+
 
     public Roteiro(String titulo, String conteudo, Cliente cliente) {
         this.titulo = titulo;

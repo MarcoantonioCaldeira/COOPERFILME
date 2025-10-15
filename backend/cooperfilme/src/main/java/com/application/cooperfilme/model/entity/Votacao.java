@@ -30,6 +30,9 @@ public class Votacao {
     @Column(nullable = false)
     private LocalDateTime dataVoto = LocalDateTime.now();
 
+    public Votacao() {
+    }
+
     public Votacao(Roteiro roteiro, Usuario aprovador, Boolean aprovado, String justificativa) {
         this.roteiro = roteiro;
         this.aprovador = aprovador;

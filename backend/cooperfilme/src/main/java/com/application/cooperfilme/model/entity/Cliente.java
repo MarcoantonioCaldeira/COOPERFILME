@@ -29,6 +29,9 @@ public class Cliente {
     @ToString.Exclude
     private List<Roteiro> roteiros = new ArrayList<>();
 
+    public Cliente() {
+    }
+
     public Cliente(String nome, String email, String telefone) {
         this.nome = nome;
         this.email = email;
