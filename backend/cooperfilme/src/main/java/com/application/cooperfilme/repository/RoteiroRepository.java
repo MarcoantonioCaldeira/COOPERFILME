@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,8 +16,8 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
     @Query("SELECT r FROM Roteiro r JOIN r.cliente c WHERE r.id = :id AND c.email = :email")
     Optional<Roteiro> findByIdAndClienteEmail(Long id, String email);
 
-    @Query("SELECT r FROM Roteiro r JOIN r.usuarioResponsavel u WHERE r.status = :status AND u.email = :email")
-    List<Roteiro> findByStatusAndUsuarioResponsavelEmail(StatusRoteiro status, String email);
+    @Query("SELECT r FROM Roteiro r JOIN r.usuarioResponsavel u WHERE r.status = :status AND u.email = :email AND r.dataEnvio <= :dataEnvio")
+    List<Roteiro> findByStatusAndUsuarioResponsavelEmail(StatusRoteiro status, String email, Date dataEnvio);
 
     @Query("SELECT r FROM Roteiro r WHERE r.status = :status")
     List<Roteiro> findByStatus(StatusRoteiro status);

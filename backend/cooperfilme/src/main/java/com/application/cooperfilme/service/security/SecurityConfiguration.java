@@ -48,7 +48,8 @@ public class SecurityConfiguration {
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/cadastrar").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/cliente/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/roteiros/enviar").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/clientes/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

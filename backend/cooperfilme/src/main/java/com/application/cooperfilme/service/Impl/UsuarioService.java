@@ -1,22 +1,21 @@
 package com.application.cooperfilme.service.Impl;
 
 import com.application.cooperfilme.model.dto.UsuarioDTO;
+import com.application.cooperfilme.model.dto.UsuarioRespostaDTO;
 import com.application.cooperfilme.model.entity.Usuario;
 import com.application.cooperfilme.repository.UsuarioRepository;
-import com.application.cooperfilme.service.UsuarioService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UsuarioServiceImpl implements UsuarioService {
+@Slf4j
+@RequiredArgsConstructor
+public class UsuarioService implements com.application.cooperfilme.service.UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
 
     @Override
     @Transactional
@@ -43,10 +42,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario listar(Long id) {
+    public UsuarioRespostaDTO pegarPorId(Long id) {
         var usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        return usuario;
+        return new UsuarioRespostaDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getCargo()
+        );
     }
 
     @Override

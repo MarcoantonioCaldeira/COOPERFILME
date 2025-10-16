@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table
+@Table(name = "tb_roteiros")
 public class Roteiro {
 
     @Id

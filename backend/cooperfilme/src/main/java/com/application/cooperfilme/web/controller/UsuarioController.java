@@ -3,9 +3,11 @@ package com.application.cooperfilme.web.controller;
 import com.application.cooperfilme.model.dto.AutenticacaoDTO;
 import com.application.cooperfilme.model.dto.LoginDTO;
 import com.application.cooperfilme.model.dto.UsuarioDTO;
+import com.application.cooperfilme.model.dto.UsuarioRespostaDTO;
 import com.application.cooperfilme.model.entity.Usuario;
 import com.application.cooperfilme.service.UsuarioService;
 import com.application.cooperfilme.web.SystemMessage;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.application.cooperfilme.service.security.TokenService;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @Controller
 @RequestMapping("/usuarios")
+@Tag(name = "Usuario", description = "Gerenciamento de usuarios")
 public class UsuarioController {
 
     @Autowired
@@ -47,15 +50,15 @@ public class UsuarioController {
 
     @GetMapping(value = "/listar/{id}",
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public  ResponseEntity<Object> listByUser(@PathVariable("id") Long id) {
-        Usuario usuario = usuarioService.listar(id);
-        SystemMessage<Usuario> userMessage = new SystemMessage<Usuario>(HttpStatus.OK.value(), "Usuario lido com sucesso", usuario);
+    public  ResponseEntity<SystemMessage<UsuarioRespostaDTO>> listarPorId(@PathVariable("id") Long id) {
+        UsuarioRespostaDTO usuario = usuarioService.pegarPorId(id);
+        SystemMessage<UsuarioRespostaDTO> userMessage = new SystemMessage<>(HttpStatus.OK.value(), "Usuário lido com sucesso", usuario);
         return ResponseEntity.ok().body(userMessage);
     }
 
     @PutMapping(value = "/atualizar/{id}",
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public  ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO) {
+    public  ResponseEntity<?> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO) {
         Usuario usuario = usuarioService.atualizar(id, usuarioDTO);
         SystemMessage<Usuario> userMessage = new SystemMessage<>(HttpStatus.OK.value(), "Conexão bem-sucedida! Nota criada com sucesso.", usuario);
         return ResponseEntity.ok().body(userMessage);
@@ -74,7 +77,7 @@ public class UsuarioController {
     @DeleteMapping(value = "/deletar/{id}")
     public ResponseEntity<?> deletarUsuario(@PathVariable("id") Long id) {
         usuarioService.deletar(id);
-        SystemMessage<Usuario> userMessage = new SystemMessage<Usuario>(HttpStatus.OK.value(), "Registro de id: " + id + "deletado com sucesso", null);
+        SystemMessage<Usuario> userMessage = new SystemMessage<Usuario>(HttpStatus.OK.value(), "Registro de id: " + id + " deletado com sucesso", null);
         return ResponseEntity.ok().body(userMessage);
     }
 

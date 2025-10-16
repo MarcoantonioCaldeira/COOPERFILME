@@ -20,6 +20,6 @@ public record RoteiroDTO(
         String clienteEmail,
 
         @NotBlank(message = "Telefone do cliente é obrigatório")
-        String clienteTelefones
+        String telefone
 ) {
 }
