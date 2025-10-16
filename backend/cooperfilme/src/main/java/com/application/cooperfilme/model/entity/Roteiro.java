@@ -124,6 +124,10 @@ public class Roteiro {
         return votacoes.stream().filter(votacao -> !votacao.getAprovado()).count();
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getTitulo() {
         return titulo;
     }

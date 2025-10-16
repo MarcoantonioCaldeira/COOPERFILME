@@ -8,5 +8,5 @@ public enum StatusRoteiro {
     AGUARDANDO_APROVACAO,
     EM_APROVACAO,
     APROVADO,
-    REJEITADO
+    RECUSADO
 }
