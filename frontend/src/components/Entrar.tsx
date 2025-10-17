@@ -3,38 +3,49 @@ import { Film, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { authService } from '../services/api';
 
-type UserRole = 'analista' | 'revisor' | 'aprovador';
+type FrontRole = 'analyst' | 'reviewer' | 'approver';
 
-interface LoginProps {
-  onLogin: (role: UserRole) => void;
-  onBack: () => void;
+function mapCargoToFrontRole(cargo: string): FrontRole {
+  const enMap: Record<string, FrontRole> = {
+    ANALISTA: 'analyst',
+    REVISOR: 'reviewer',
+    APROVADOR: 'approver',
+  };
+  return (enMap[cargo] ?? 'analyst') as FrontRole;
 }
 
-export function Entrar({ onLogin, onBack }: LoginProps) {
+interface LoginProps {
+  onLogin: (role: FrontRole) => void;
+  onBack: () => void;
+  demoMode?: boolean;
+}
+
+export function Entrar({ onLogin, onBack, demoMode = false }: LoginProps) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [role, setRole] = useState<'ANALISTA' | 'REVISOR' | 'APROVADOR'>('ANALISTA');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
-        const response = await authService.login({ 
-        email, 
-        senha: senha 
-        });
-        
-        console.log('Sucesso ao fazer login', response);
-        
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.usuario));
+      const response = await authService.login({ email, senha });
 
-        onLogin(response.usuario.cargo as UserRole);
-        
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.usuario));
+
+      const cargoEfetivo = demoMode ? role : response.usuario.cargo;
+      onLogin(mapCargoToFrontRole(cargoEfetivo));
     } catch (error) {
-        console.error('Falha ao fazer login:', error);
-        alert('Falha no login. Verifique suas credenciais.');
+      console.error('Falha ao fazer login:', error);
+      alert('Falha no login. Verifique suas credenciais.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,7 +79,7 @@ export function Entrar({ onLogin, onBack }: LoginProps) {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>E-mail</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
                   type="email"
@@ -80,7 +91,7 @@ export function Entrar({ onLogin, onBack }: LoginProps) {
               </div>
 
               <div className="space-y-2">
-                <Label>Senha</Label>
+                <Label htmlFor="password">Senha</Label>
                 <Input
                   id="password"
                   type="password"
@@ -90,16 +101,31 @@ export function Entrar({ onLogin, onBack }: LoginProps) {
                   required
                 />
               </div>
-              
-              <Button type="submit" className="w-full">
-                Entrar
+
+                <div className="space-y-2">
+                  <Label htmlFor="role">Cargo (Demo)</Label>
+                  <Select value={role} onValueChange={(v) => setRole(v as typeof role)}>
+                    <SelectTrigger id="role">
+                      <SelectValue placeholder="Selecione o cargo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ANALISTA">Analista</SelectItem>
+                      <SelectItem value="REVISOR">Revisor</SelectItem>
+                      <SelectItem value="APROVADOR">Aprovador</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">
+                    Em modo demo, o cargo selecionado aqui sobrescreve o cargo vindo do backend.
+                  </p>
+                </div>
+  
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Entrando...' : 'Entrar'}
               </Button>
 
               <div className="text-center">
-                <button 
-                  type="button"
-                  className="text-sm text-blue-600 hover:underline"
-                >
+                <button type="button" className="text-sm text-blue-600 hover:underline">
                   Esqueci minha senha
                 </button>
               </div>
@@ -107,9 +133,11 @@ export function Entrar({ onLogin, onBack }: LoginProps) {
           </CardContent>
         </Card>
 
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Demo: Use qualquer email/senha e selecione o cargo desejado
-        </p>
+        {demoMode && (
+          <p className="text-center text-sm text-gray-600 mt-4">
+            Demo: Use qualquer email/senha e selecione o cargo desejado
+          </p>
+        )}
       </div>
     </div>
   );
