@@ -57,5 +57,6 @@ O objetivo foi criar uma aplicação completa, com autenticação e controle de 
 Crie o banco de dados:
 
 ```sql
-CREATE DATABASE cooperfilme;
+CREATE DATABASE db_cooperfilme;
+
 
