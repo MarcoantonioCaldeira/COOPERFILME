@@ -30,6 +30,7 @@ O objetivo foi criar uma aplicação completa, com autenticação e controle de 
 -  [Spring Security (JWT)](https://spring.io/projects/spring-security)
 -  [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
 -  [Jakarta Validation](https://jakarta.ee/specifications/bean-validation/)
+-  [Swagger UI](https://swagger.io/tools/swagger-ui/)
 -  [Lombok](https://projectlombok.org/)
 
 ### **Banco de Dados**
@@ -54,3 +55,4 @@ Crie o banco de dados:
 
 ```sql
 CREATE DATABASE cooperfilme;
+
