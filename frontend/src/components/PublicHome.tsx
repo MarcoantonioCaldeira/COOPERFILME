@@ -45,7 +45,6 @@ export function PublicHome({ onNavigate }: PublicHomeProps) {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {/* Submit Script Card */}
           <Card className="cursor-pointer border-2" onClick={() => onNavigate('submit')}>
             <CardContent className="p-8">
               <div className="flex flex-col items-center text-center gap-4">
@@ -65,7 +64,6 @@ export function PublicHome({ onNavigate }: PublicHomeProps) {
             </CardContent>
           </Card>
 
-          {/* Check Status Card */}
           <Card className="cursor-pointer border-2" onClick={() => onNavigate('check-status')}>
             <CardContent className="p-8">
               <div className="flex flex-col items-center text-center gap-4">
@@ -86,7 +84,6 @@ export function PublicHome({ onNavigate }: PublicHomeProps) {
           </Card>
         </div>
 
-        {/* Info Section */}
         <div className="mt-16 bg-white rounded-lg p-8 max-w-4xl mx-auto">
           <h3 className="text-gray-900 mb-6 text-center">Como Funciona</h3>
           <div className="grid md:grid-cols-4 gap-6">
@@ -118,7 +115,6 @@ export function PublicHome({ onNavigate }: PublicHomeProps) {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-gray-600">
