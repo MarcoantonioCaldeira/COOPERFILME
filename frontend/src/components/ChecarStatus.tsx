@@ -1,124 +1,126 @@
-import { Check, X, Circle } from 'lucide-react';
+import { useState } from "react";
+import { ArrowLeft, Search } from "lucide-react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { LinhaDoTempoStatus } from "./LinhaDoTempoStatus";
+import { clientePublicService } from "../services/api";
 
-interface StatusTimelineProps {
-  currentStatus: string;
+interface CheckStatusProps {
+  onBack: () => void;
 }
 
-type StatusStep = {
-  id: string;
-  label: string;
-  description: string;
-};
+export function ChecarStatus({ onBack }: CheckStatusProps) {
+  const [searchValue, setSearchValue] = useState("");
+  const [script, setScript] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-const statusSteps: StatusStep[] = [
-  { id: 'submitted', label: 'Enviado', description: 'Roteiro recebido' },
-  { id: 'in-analysis', label: 'Em Análise', description: 'Análise inicial' },
-  { id: 'in-review', label: 'Em Revisão', description: 'Revisão detalhada' },
-  { id: 'in-approval', label: 'Em Aprovação', description: 'Votação final' },
-  { id: 'completed', label: 'Finalizado', description: 'Processo concluído' }
-];
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchValue.trim()) return;
 
-export function ChecarStatus({ currentStatus }: StatusTimelineProps) {
-  const getCurrentStepIndex = () => {
-    if (currentStatus === 'approved' || currentStatus === 'rejected') {
-      return 4; // completed
+    setLoading(true);
+    setError(null);
+    setScript(null);
+
+    try {
+      const result = await clientePublicService.consultarRoteiro(0, searchValue.trim());
+      setScript(result);
+    } catch (err: any) {
+      console.error("Erro ao buscar roteiro:", err);
+      setError("Roteiro não encontrado. Verifique o e-mail digitado.");
+    } finally {
+      setLoading(false);
     }
-    
-    const statusMap: Record<string, number> = {
-      'submitted': 0,
-      'pending-analysis': 0,
-      'in-analysis': 1,
-      'analysis-approved': 1,
-      'pending-review': 1,
-      'in-review': 2,
-      'review-approved': 2,
-      'pending-approval': 2,
-      'in-approval': 3
-    };
-    
-    return statusMap[currentStatus] ?? 0;
   };
 
-  const currentStepIndex = getCurrentStepIndex();
-  const isApproved = currentStatus === 'approved';
-  const isRejected = currentStatus === 'rejected';
-
   return (
-    <div className="relative">
-      <div className="flex items-center justify-between">
-        {statusSteps.map((step, index) => {
-          const isCompleted = index < currentStepIndex;
-          const isCurrent = index === currentStepIndex;
-          const isLast = index === statusSteps.length - 1;
-          
-          let stepStatus: 'completed' | 'current' | 'pending' | 'approved' | 'rejected' = 'pending';
-          
-          if (isLast && isApproved) {
-            stepStatus = 'approved';
-          } else if (isLast && isRejected) {
-            stepStatus = 'rejected';
-          } else if (isCompleted) {
-            stepStatus = 'completed';
-          } else if (isCurrent) {
-            stepStatus = 'current';
-          }
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 p-4">
+      <div className="max-w-4xl mx-auto pt-8">
+        <Button variant="ghost" onClick={onBack} className="mb-4">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
 
-          return (
-            <div key={step.id} className="flex-1 relative">
-              <div className="flex flex-col items-center">
-                {/* Circle */}
-                <div className={`
-                  relative z-10 w-10 h-10 rounded-full flex items-center justify-center
-                  ${stepStatus === 'completed' ? 'bg-blue-600' : ''}
-                  ${stepStatus === 'current' ? 'bg-blue-600 ring-4 ring-blue-100' : ''}
-                  ${stepStatus === 'pending' ? 'bg-gray-200' : ''}
-                  ${stepStatus === 'approved' ? 'bg-green-600' : ''}
-                  ${stepStatus === 'rejected' ? 'bg-red-600' : ''}
-                `}>
-                  {stepStatus === 'completed' && (
-                    <Check className="h-5 w-5 text-white" />
-                  )}
-                  {stepStatus === 'current' && (
-                    <Circle className="h-5 w-5 text-white fill-white" />
-                  )}
-                  {stepStatus === 'pending' && (
-                    <Circle className="h-5 w-5 text-gray-400" />
-                  )}
-                  {stepStatus === 'approved' && (
-                    <Check className="h-5 w-5 text-white" />
-                  )}
-                  {stepStatus === 'rejected' && (
-                    <X className="h-5 w-5 text-white" />
-                  )}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Consultar Status do Roteiro</CardTitle>
+            <CardDescription>
+              Digite o ID do roteiro ou seu e-mail para consultar o status
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <form onSubmit={handleSearch} className="space-y-4">
+              <div className="flex gap-2">
+                <div className="flex-1 space-y-2">
+                  <Label htmlFor="search">ID do Roteiro ou E-mail</Label>
+                  <Input
+                    id="search"
+                    placeholder="ROT-001 ou seu@email.com"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                  />
                 </div>
+                <div className="flex items-end">
+                  <Button type="submit" disabled={loading}>
+                    <Search className="h-4 w-4 mr-2" />
+                    {loading ? "Consultando..." : "Consultar"}
+                  </Button>
+                </div>
+              </div>
+            </form>
 
-                {/* Label */}
-                <div className="mt-2 text-center">
-                  <p className={`text-sm ${
-                    stepStatus === 'completed' || stepStatus === 'current' || stepStatus === 'approved' || stepStatus === 'rejected'
-                      ? 'text-gray-900'
-                      : 'text-gray-500'
-                  }`}>
-                    {isLast && isApproved ? 'Aprovado ✓' : ''}
-                    {isLast && isRejected ? 'Recusado ✗' : ''}
-                    {(!isLast || (!isApproved && !isRejected)) ? step.label : ''}
-                  </p>
-                  <p className="text-xs text-gray-500 hidden sm:block">
-                    {isLast && (isApproved || isRejected) ? '' : step.description}
-                  </p>
+            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+          </CardContent>
+        </Card>
+
+        {script && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{script.titulo}</CardTitle>
+              <CardDescription>ID: {script.id}</CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              {/* Detalhes */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-600">Autor</p>
+                    <p>{script.nome}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">E-mail</p>
+                    <p>{script.email}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-600">Responsável Atual</p>
+                    <p>{script.usuarioResponsavel?.nome || "Aguardando atribuição"}</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Line */}
-              {index < statusSteps.length - 1 && (
-                <div className={`
-                  absolute top-5 left-1/2 w-full h-0.5 -z-0
-                  ${isCompleted ? 'bg-blue-600' : 'bg-gray-200'}
-                `} />
+              {/* Status */}
+              <div>
+                <h4 className="mb-4">Status do Roteiro</h4>
+                <LinhaDoTempoStatus currentStatus={script.status} />
+              </div>
+
+              {/* Observações */}
+              {script.observacoes && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Observações</p>
+                  <p className="text-gray-800">{script.observacoes}</p>
+                </div>
               )}
-            </div>
-          );
-        })}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

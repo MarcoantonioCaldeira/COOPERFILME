@@ -7,7 +7,7 @@ import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { roteiroService, authService } from "../services/api";
 
-type UserRole = "analyst" | "reviewer" | "approver";
+type UserRole = "ANALISTA" | "REVISOR" | "APROVADOR";
 
 type ScriptStatus =
   | "AGUARDANDO_ANALISE"
@@ -66,7 +66,7 @@ export function TelaPrivada({ userRole, onLogout, onViewScript }: DashboardProps
   }, [user?.id]);
 
   const getRoleLabel = (role: UserRole): string => {
-    const labels = { analyst: "Analista", reviewer: "Revisor", approver: "Aprovador" };
+    const labels = { ANALISTA: "Analista", REVISOR: "Revisor", APROVADOR: "Aprovador" };
     return labels[role];
   };
 

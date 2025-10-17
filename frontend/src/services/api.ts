@@ -67,7 +67,7 @@ export const clientePublicService = {
     return data;
   },
   consultarRoteiro: async (id: number, emailCliente: string): Promise<RoteiroResponse> => {
-    const { data } = await api.get<RoteiroResponse>(`/roteiros/${emailCliente}`);
+    const { data } = await api.get<RoteiroResponse>(`/clientes/email/${encodeURIComponent(emailCliente)}`);
     return data;
   }
 };
@@ -88,15 +88,11 @@ export const roteiroService = {
     return data;
   },
   revisar: async (roteiroId: number, usuarioId: number, revisao: RevisaoDTO): Promise<RoteiroResponse> => {
-    const { data } = await api.put<RoteiroResponse>(`/roteiros/revisar/${roteiroId}`, revisao, {
-      params: { usuarioId }
-    });
+    const { data } = await api.put<RoteiroResponse>(`/roteiros/revisar/${roteiroId}/${usuarioId}`, revisao);
     return data;
   },
   votar: async (roteiroId: number, usuarioId: number, voto: VotoDTO): Promise<RoteiroResponse> => {
-    const { data } = await api.post<RoteiroResponse>(`/roteiros/votar/${roteiroId}`, voto, {
-      params: { usuarioId }
-    });
+    const { data } = await api.post<RoteiroResponse>(`/roteiros/votar/${roteiroId}/${usuarioId}`, voto);
     return data;
   },
   pegarPorId: async (id: number): Promise<RoteiroResponse> => {

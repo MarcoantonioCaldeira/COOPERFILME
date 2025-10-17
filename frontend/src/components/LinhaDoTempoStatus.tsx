@@ -18,7 +18,7 @@ const statusSteps: StatusStep[] = [
   { id: 'completed', label: 'Finalizado', description: 'Processo concluído' }
 ];
 
-export function StatusTimeline({ currentStatus }: StatusTimelineProps) {
+export function LinhaDoTempoStatus({ currentStatus }: StatusTimelineProps) {
   const getCurrentStepIndex = () => {
     if (currentStatus === 'approved' || currentStatus === 'rejected') {
       return 4; // completed
