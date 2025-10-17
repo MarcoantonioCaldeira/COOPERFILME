@@ -13,7 +13,7 @@ interface LoginProps {
   onBack: () => void;
 }
 
-export function Login({ onLogin, onBack }: LoginProps) {
+export function Entrar({ onLogin, onBack }: LoginProps) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 

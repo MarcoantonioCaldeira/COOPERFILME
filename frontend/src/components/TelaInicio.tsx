@@ -6,7 +6,7 @@ interface PublicHomeProps {
   onNavigate: (page: 'submit' | 'check-status' | 'login') => void;
 }
 
-export function PublicHome({ onNavigate }: PublicHomeProps) {
+export function TelaInicio({ onNavigate }: PublicHomeProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100">
       {/* Header */}
