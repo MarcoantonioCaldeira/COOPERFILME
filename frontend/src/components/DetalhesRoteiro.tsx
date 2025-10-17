@@ -41,7 +41,7 @@ export function DetalhesRoteiro({ scriptId, userRole, onBack }: Props) {
   useEffect(() => {
     const fetchScript = async () => {
       try {
-        const data = await roteiroService.buscarPorId(scriptId);
+        const data = await roteiroService.pegarPorId(scriptId);
         setScript(data);
       } catch (e) {
         console.error("Erro ao buscar roteiro:", e);
