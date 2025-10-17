@@ -69,9 +69,17 @@ public class UsuarioController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
+        var usuario = (Usuario) auth.getPrincipal();
+        var token = tokenService.generateToken(usuario);
 
-        return ResponseEntity.ok(new LoginDTO(token));
+        var user = new UsuarioRespostaDTO(
+            usuario.getId(),
+            usuario.getNome(),
+            usuario.getEmail(),
+            usuario.getCargo()
+        );
+
+        return ResponseEntity.ok(new LoginDTO(token, user));
     }
 
     @DeleteMapping(value = "/deletar/{id}")

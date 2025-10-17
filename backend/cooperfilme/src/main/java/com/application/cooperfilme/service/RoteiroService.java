@@ -21,4 +21,5 @@ public interface RoteiroService {
     List<Roteiro> listarRoteiros(StatusRoteiro status, String emailUsuario, Date dataEnvio);
     Roteiro buscarRoteiro(Long id);
     Usuario buscarUsuario(Long id);
+    List<Roteiro> listarRoteiros();
 }

@@ -7,15 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { authService } from '../services/api';
 
-type FrontRole = 'analyst' | 'reviewer' | 'approver';
+type FrontRole = 'ANALISTA' | 'REVISOR' | 'APROVADOR';
 
 function mapCargoToFrontRole(cargo: string): FrontRole {
   const enMap: Record<string, FrontRole> = {
-    ANALISTA: 'analyst',
-    REVISOR: 'reviewer',
-    APROVADOR: 'approver',
+    ANALISTA: 'ANALISTA',
+    REVISOR: 'REVISOR',
+    APROVADOR: 'APROVADOR',
   };
-  return (enMap[cargo] ?? 'analyst') as FrontRole;
+  return (enMap[cargo] ?? 'ANALISTA') as FrontRole;
 }
 
 interface LoginProps {
@@ -33,21 +33,25 @@ export function Entrar({ onLogin, onBack, demoMode = false }: LoginProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const response = await authService.login({ email, senha });
 
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.usuario));
+      if (response?.token) {
+        localStorage.setItem("token", response.token);
 
-      const cargoEfetivo = demoMode ? role : response.usuario.cargo;
-      onLogin(mapCargoToFrontRole(cargoEfetivo));
+        onLogin(role);
+      } else {
+        alert("Token não retornado. Verifique o backend.");
+      }
     } catch (error) {
-      console.error('Falha ao fazer login:', error);
-      alert('Falha no login. Verifique suas credenciais.');
+      console.error("Falha ao fazer login:", error);
+      alert("Falha no login. Verifique suas credenciais.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-4">

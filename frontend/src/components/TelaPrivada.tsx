@@ -1,22 +1,32 @@
-import { useState } from 'react';
-import { Film, LogOut, FileText, Clock, CheckCircle } from 'lucide-react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Input } from './ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useState, useEffect } from "react";
+import { Film, LogOut, FileText, Clock, CheckCircle } from "lucide-react";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { roteiroService, authService } from "../services/api";
 
-type UserRole = 'analyst' | 'reviewer' | 'approver';
-type ScriptStatus = 'pending-analysis' | 'in-analysis' | 'pending-review' | 'in-review' | 'pending-approval' | 'in-approval' | 'approved' | 'rejected';
+type UserRole = "analyst" | "reviewer" | "approver";
+
+type ScriptStatus =
+  | "AGUARDANDO_ANALISE"
+  | "EM_ANALISE"
+  | "AGUARDANDO_REVISAO"
+  | "EM_REVISAO"
+  | "AGUARDANDO_APROVACAO"
+  | "EM_APROVACAO"
+  | "APROVADO"
+  | "RECUSADO";
 
 interface DashboardProps {
   userRole: UserRole;
   onLogout: () => void;
-  onViewScript: (scriptId: string) => void;
+  onViewScript: (scriptId: number) => void;
 }
 
 interface Script {
-  id: string;
+  id: number;
   title: string;
   author: string;
   status: ScriptStatus;
@@ -24,188 +34,105 @@ interface Script {
   assignedTo: string | null;
 }
 
-// Mock data
-const mockScripts: Script[] = [
-  {
-    id: 'ROT-ABC123',
-    title: 'A Jornada do Herói',
-    author: 'João Silva',
-    status: 'in-review',
-    submittedDate: '2025-10-10',
-    assignedTo: 'Maria Santos'
-  },
-  {
-    id: 'ROT-XYZ789',
-    title: 'Noite Estrelada',
-    author: 'Ana Costa',
-    status: 'pending-analysis',
-    submittedDate: '2025-10-14',
-    assignedTo: null
-  },
-  {
-    id: 'ROT-DEF456',
-    title: 'O Último Suspiro',
-    author: 'Pedro Alves',
-    status: 'in-analysis',
-    submittedDate: '2025-10-12',
-    assignedTo: 'Carlos Mendes'
-  },
-  {
-    id: 'ROT-GHI789',
-    title: 'Amor em Tempos Modernos',
-    author: 'Julia Santos',
-    status: 'pending-approval',
-    submittedDate: '2025-10-08',
-    assignedTo: null
-  },
-  {
-    id: 'ROT-JKL012',
-    title: 'A Cidade Perdida',
-    author: 'Rafael Lima',
-    status: 'approved',
-    submittedDate: '2025-10-05',
-    assignedTo: null
-  },
-  {
-    id: 'ROT-MNO345',
-    title: 'Sombras do Passado',
-    author: 'Beatriz Oliveira',
-    status: 'rejected',
-    submittedDate: '2025-10-07',
-    assignedTo: null
-  }
-];
-
 export function TelaPrivada({ userRole, onLogout, onViewScript }: DashboardProps) {
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [scripts, setScripts] = useState<Script[]>([]);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const user = authService.getCurrentUser();
+
+  useEffect(() => {
+    const fetchScripts = async () => {
+      setLoading(true);
+      try {
+        const data = await roteiroService.listar();
+        const mapped = data.map((r: any) => ({
+          id: r.id,
+          title: r.titulo,
+          author: r.cliente.nome,
+          status: r.status,
+          assignedTo: r.usuarioResponsavel?.nome || null,
+          submittedDate: r.dataEnvio || r.dataRegistro || new Date().toISOString(),
+        }));
+        setScripts(mapped);
+      } catch (e) {
+        console.error("Erro ao buscar roteiros:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchScripts();
+  }, [user?.id]);
 
   const getRoleLabel = (role: UserRole): string => {
-    const labels = {
-      analyst: 'Analista',
-      reviewer: 'Revisor',
-      approver: 'Aprovador'
-    };
+    const labels = { analyst: "Analista", reviewer: "Revisor", approver: "Aprovador" };
     return labels[role];
   };
 
   const getStatusBadge = (status: ScriptStatus) => {
-    const statusConfig = {
-      'pending-analysis': { label: 'Aguardando Análise', variant: 'secondary' as const },
-      'in-analysis': { label: 'Em Análise', variant: 'default' as const },
-      'pending-review': { label: 'Aguardando Revisão', variant: 'secondary' as const },
-      'in-review': { label: 'Em Revisão', variant: 'default' as const },
-      'pending-approval': { label: 'Aguardando Aprovação', variant: 'secondary' as const },
-      'in-approval': { label: 'Em Aprovação', variant: 'default' as const },
-      'approved': { label: 'Aprovado', variant: 'outline' as const },
-      'rejected': { label: 'Recusado', variant: 'outline' as const }
-    };
+    const config = {
+      AGUARDANDO_ANALISE: { label: "Aguardando Análise", color: "bg-gray-200" },
+      EM_ANALISE: { label: "Em Análise", color: "bg-blue-100 text-blue-800" },
+      AGUARDANDO_REVISAO: { label: "Aguardando Revisão", color: "bg-gray-200" },
+      EM_REVISAO: { label: "Em Revisão", color: "bg-blue-100 text-blue-800" },
+      AGUARDANDO_APROVACAO: { label: "Aguardando Aprovação", color: "bg-gray-200" },
+      EM_APROVACAO: { label: "Em Aprovação", color: "bg-blue-100 text-blue-800" },
+      APROVADO: { label: "Aprovado", color: "bg-green-100 text-green-800" },
+      RECUSADO: { label: "Recusado", color: "bg-red-100 text-red-800" },
+    } as const;
 
-    const config = statusConfig[status];
-    const className = status === 'approved' ? 'border-green-600 text-green-700' : 
-                     status === 'rejected' ? 'border-red-600 text-red-700' : '';
+    const cfg = config[status];
+    if (!cfg) return <Badge variant="outline">Status desconhecido</Badge>;
 
-    return (
-      <Badge variant={config.variant} className={className}>
-        {config.label}
-      </Badge>
-    );
+    return <Badge className={`${cfg.color} font-medium`}>{cfg.label}</Badge>;
   };
 
-  const getRelevantScripts = (): Script[] => {
-    let filtered = mockScripts;
-
-    // Filter by user role
-    if (userRole === 'analyst') {
-      filtered = mockScripts.filter(s => 
-        s.status === 'pending-analysis' || s.status === 'in-analysis'
+  const filteredScripts = scripts
+    .filter((s) => (filterStatus === "all" ? true : s.status === filterStatus))
+    .filter((s) => {
+      if (!searchTerm) return true;
+      const term = searchTerm.toLowerCase();
+      return (
+        s.title.toLowerCase().includes(term) ||
+        s.author.toLowerCase().includes(term) ||
+        s.id.toString().includes(term)
       );
-    } else if (userRole === 'reviewer') {
-      filtered = mockScripts.filter(s => 
-        s.status === 'pending-review' || s.status === 'in-review'
-      );
-    } else if (userRole === 'approver') {
-      filtered = mockScripts.filter(s => 
-        s.status === 'pending-approval' || s.status === 'in-approval'
-      );
-    }
+    });
 
-    // Filter by status
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter(s => s.status === filterStatus);
-    }
-
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(s => 
-        s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.id.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    return filtered;
+  const metrics = {
+    pending: scripts.filter((s) =>
+      ["AGUARDANDO_ANALISE", "AGUARDANDO_REVISAO", "AGUARDANDO_APROVACAO"].includes(s.status)
+    ).length,
+    inProgress: scripts.filter((s) =>
+      ["EM_ANALISE", "EM_REVISAO", "EM_APROVACAO"].includes(s.status)
+    ).length,
+    approved: scripts.filter((s) => s.status === "APROVADO").length,
   };
-
-  const getMetrics = () => {
-    let allScripts = mockScripts;
-    
-    if (userRole === 'analyst') {
-      allScripts = mockScripts.filter(s => 
-        s.status === 'pending-analysis' || s.status === 'in-analysis'
-      );
-    } else if (userRole === 'reviewer') {
-      allScripts = mockScripts.filter(s => 
-        s.status === 'pending-review' || s.status === 'in-review'
-      );
-    } else if (userRole === 'approver') {
-      allScripts = mockScripts.filter(s => 
-        s.status === 'pending-approval' || s.status === 'in-approval'
-      );
-    }
-
-    const pending = allScripts.filter(s => 
-      s.status.startsWith('pending-')
-    ).length;
-
-    const inProgress = allScripts.filter(s => 
-      s.status.startsWith('in-')
-    ).length;
-
-    const approved = mockScripts.filter(s => s.status === 'approved').length;
-
-    return { pending, inProgress, approved };
-  };
-
-  const metrics = getMetrics();
-  const scripts = getRelevantScripts();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* HEADER */}
       <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <Film className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-blue-900">COOPERFILME</h1>
-                <p className="text-sm text-gray-600">{getRoleLabel(userRole)}</p>
-              </div>
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-600 p-2 rounded-lg">
+              <Film className="h-6 w-6 text-white" />
             </div>
-            <Button variant="outline" onClick={onLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sair
-            </Button>
+            <div>
+              <h1 className="text-blue-900 font-semibold">COOPERFILME</h1>
+              <p className="text-sm text-gray-600">{getRoleLabel(userRole)}</p>
+            </div>
           </div>
+          <Button variant="outline" onClick={onLogout}>
+            <LogOut className="h-4 w-4 mr-2" /> Sair
+          </Button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Metrics */}
+      {/* MAIN */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* MÉTRICAS */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -213,7 +140,7 @@ export function TelaPrivada({ userRole, onLogout, onViewScript }: DashboardProps
               <Clock className="h-4 w-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-gray-900">{metrics.pending}</div>
+              <div className="text-gray-900 text-xl">{metrics.pending}</div>
             </CardContent>
           </Card>
 
@@ -223,7 +150,7 @@ export function TelaPrivada({ userRole, onLogout, onViewScript }: DashboardProps
               <FileText className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-gray-900">{metrics.inProgress}</div>
+              <div className="text-gray-900 text-xl">{metrics.inProgress}</div>
             </CardContent>
           </Card>
 
@@ -233,67 +160,56 @@ export function TelaPrivada({ userRole, onLogout, onViewScript }: DashboardProps
               <CheckCircle className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-gray-900">{metrics.approved}</div>
+              <div className="text-gray-900 text-xl">{metrics.approved}</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Filters */}
+        {/* FILTROS */}
         <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <Input
-                  placeholder="Buscar por título, autor ou ID..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="sm:w-[200px]">
-                  <SelectValue placeholder="Filtrar por status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os Status</SelectItem>
-                  {userRole === 'analyst' && (
-                    <>
-                      <SelectItem value="pending-analysis">Aguardando Análise</SelectItem>
-                      <SelectItem value="in-analysis">Em Análise</SelectItem>
-                    </>
-                  )}
-                  {userRole === 'reviewer' && (
-                    <>
-                      <SelectItem value="pending-review">Aguardando Revisão</SelectItem>
-                      <SelectItem value="in-review">Em Revisão</SelectItem>
-                    </>
-                  )}
-                  {userRole === 'approver' && (
-                    <>
-                      <SelectItem value="pending-approval">Aguardando Aprovação</SelectItem>
-                      <SelectItem value="in-approval">Em Aprovação</SelectItem>
-                    </>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
+          <CardContent className="pt-6 flex flex-col sm:flex-row gap-4">
+            <Input
+              placeholder="Buscar por título, autor ou ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1"
+            />
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="sm:w-[200px]">
+                <SelectValue placeholder="Filtrar por status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os Status</SelectItem>
+                <SelectItem value="AGUARDANDO_ANALISE">Aguardando Análise</SelectItem>
+                <SelectItem value="EM_ANALISE">Em Análise</SelectItem>
+                <SelectItem value="AGUARDANDO_REVISAO">Aguardando Revisão</SelectItem>
+                <SelectItem value="EM_REVISAO">Em Revisão</SelectItem>
+                <SelectItem value="AGUARDANDO_APROVACAO">Aguardando Aprovação</SelectItem>
+                <SelectItem value="EM_APROVACAO">Em Aprovação</SelectItem>
+                <SelectItem value="APROVADO">Aprovado</SelectItem>
+                <SelectItem value="RECUSADO">Recusado</SelectItem>
+              </SelectContent>
+            </Select>
           </CardContent>
         </Card>
 
-        {/* Scripts List */}
+        {/* LISTA DE ROTEIROS */}
         <Card>
           <CardHeader>
             <CardTitle>Roteiros</CardTitle>
           </CardHeader>
           <CardContent>
-            {scripts.length === 0 ? (
+            {loading ? (
+              <p className="text-center text-gray-500 py-6">Carregando roteiros...</p>
+            ) : filteredScripts.length === 0 ? (
               <div className="text-center py-12">
                 <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600">Nenhum roteiro encontrado</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {scripts.map((script) => (
-                  <div 
+                {filteredScripts.map((script) => (
+                  <div
                     key={script.id}
                     className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg"
                   >
@@ -305,13 +221,14 @@ export function TelaPrivada({ userRole, onLogout, onViewScript }: DashboardProps
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
                         <span>ID: {script.id}</span>
                         <span>Autor: {script.author}</span>
-                        <span>Enviado: {new Date(script.submittedDate).toLocaleDateString('pt-BR')}</span>
-                        {script.assignedTo && (
-                          <span>Responsável: {script.assignedTo}</span>
-                        )}
+                        <span>
+                          Enviado:{" "}
+                          {new Date(script.submittedDate).toLocaleDateString("pt-BR")}
+                        </span>
+                        {script.assignedTo && <span>Responsável: {script.assignedTo}</span>}
                       </div>
                     </div>
-                    <Button 
+                    <Button
                       onClick={() => onViewScript(script.id)}
                       variant="outline"
                       className="w-full sm:w-auto"

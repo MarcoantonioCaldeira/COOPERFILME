@@ -71,5 +71,10 @@ public class RoteiroService implements com.application.cooperfilme.service.Rotei
     public Usuario buscarUsuario(Long id) {
         return roteiroFluxoService.buscarUsuario(id);
     }
+
+    @Override
+    public List<Roteiro> listarRoteiros() {
+        return roteiroCriacaoService.listarRoteiros();
+    }
 }
 

@@ -31,6 +31,10 @@ api.interceptors.response.use(
 export const authService = {
   login: async (credentials: AutenticacaoDTO): Promise<LoginDTO> => {
     const { data } = await api.post<LoginDTO>('/usuarios/login', credentials);
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.usuario));
+    
     return data;
   },
   logout: () => {
@@ -93,6 +97,14 @@ export const roteiroService = {
     const { data } = await api.post<RoteiroResponse>(`/roteiros/votar/${roteiroId}`, voto, {
       params: { usuarioId }
     });
+    return data;
+  },
+  pegarPorId: async (id: number): Promise<RoteiroResponse> => {
+    const { data } = await api.get<RoteiroResponse>(`/roteiros/${id}`);
+    return data;
+  },
+  listar: async (): Promise<RoteiroResponse[]> => {
+    const { data } = await api.get<RoteiroResponse[]>('/roteiros/listar-todos');
     return data;
   }
 };

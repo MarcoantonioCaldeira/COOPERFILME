@@ -29,7 +29,7 @@ export interface RoteiroDTO {
   conteudo: string;
   clienteNome: string;
   clienteEmail: string;
-  clienteTelefone: string;
+  telefone: string;
 }
 
 export interface RoteiroResponse {

@@ -115,4 +115,12 @@ public class RoteiroController {
         return ResponseEntity.ok(roteiro);
     }
 
+    @Operation(summary = "Listar Roteiros", description = "Busca todos os roteiros enviados")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/listar-todos")
+    public ResponseEntity<List<Roteiro>> listarRoteiros() {
+        List<Roteiro> roteiros = roteiroService.listarRoteiros();
+        return ResponseEntity.ok(roteiros);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.application.cooperfilme.model.dto;
 
 import com.application.cooperfilme.enums.Cargo;
+import com.application.cooperfilme.model.entity.Usuario;
 import com.application.cooperfilme.validation.SenhasIguais;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

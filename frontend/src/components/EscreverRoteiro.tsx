@@ -14,11 +14,11 @@ interface SubmitScriptProps {
 
 export function EscreverRoteiro({ onBack }: SubmitScriptProps) {
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    title: '',
-    content: ''
+    clienteNome: '',
+    clienteEmail: '',
+    telefone: '',
+    titulo: '',
+    conteudo: ''
   });
   const [submitted, setSubmitted] = useState(false);
   const [scriptId, setScriptId] = useState('');
@@ -28,11 +28,11 @@ export function EscreverRoteiro({ onBack }: SubmitScriptProps) {
     e.preventDefault();
    try {
         const response = await clientePublicService.enviar({
-        titulo: formData.title,
-        conteudo: formData.content,
-        clienteNome: formData.fullName,
-        clienteEmail: formData.email,
-        clienteTelefone: formData.phone
+        titulo: formData.titulo,
+        conteudo: formData.conteudo,
+        clienteNome: formData.clienteNome,
+        clienteEmail: formData.clienteEmail,
+        telefone: formData.telefone
       });
       setScriptId(response.id.toString());
       setSubmitted(true);
@@ -84,9 +84,9 @@ export function EscreverRoteiro({ onBack }: SubmitScriptProps) {
               <Alert>
                 <AlertDescription>
                   <div className="space-y-2">
-                    <p><strong>ID do Roteiro:</strong> <span className="text-blue-600">{scriptId}</span></p>
+                    <p><strong>Seu email:</strong> <span className="text-blue-600">{formData.clienteEmail}</span></p>
                     <p className="text-sm text-gray-600">
-                      Guarde este ID para consultar o status do seu roteiro.
+                     Use seu email para consultar o status do roteiro.
                     </p>
                   </div>
                 </AlertDescription>
@@ -94,13 +94,13 @@ export function EscreverRoteiro({ onBack }: SubmitScriptProps) {
 
               <div className="bg-blue-50 p-4 rounded-lg space-y-2">
                 <p className="text-sm">
-                  <strong>Título:</strong> {formData.title}
+                  <strong>Título:</strong> {formData.titulo}
                 </p>
                 <p className="text-sm">
-                  <strong>Enviado por:</strong> {formData.fullName}
+                  <strong>Enviado por:</strong> {formData.clienteNome}
                 </p>
                 <p className="text-sm">
-                  <strong>E-mail:</strong> {formData.email}
+                  <strong>E-mail:</strong> {formData.clienteEmail}
                 </p>
               </div>
 
@@ -154,74 +154,74 @@ export function EscreverRoteiro({ onBack }: SubmitScriptProps) {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Nome Completo *</Label>
+                <Label htmlFor="clienteNome">Nome Completo *</Label>
                 <Input
-                  id="fullName"
+                  id="clienteNome"
                   placeholder="Seu nome completo"
-                  value={formData.fullName}
-                  onChange={(e) => handleChange('fullName', e.target.value)}
-                  className={errors.fullName ? 'border-red-500' : ''}
+                  value={formData.clienteNome}
+                  onChange={(e) => handleChange('clienteNome', e.target.value)}
+                  className={errors.clienteNome ? 'border-red-500' : ''}
                 />
-                {errors.fullName && (
-                  <p className="text-sm text-red-600">{errors.fullName}</p>
+                {errors.clienteNome && (
+                  <p className="text-sm text-red-600">{errors.clienteNome}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">E-mail *</Label>
+                <Label htmlFor="clienteEmail">E-mail *</Label>
                 <Input
-                  id="email"
+                  id="clienteEmail"
                   type="email"
                   placeholder="seu@email.com"
-                  value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  className={errors.email ? 'border-red-500' : ''}
+                  value={formData.clienteEmail}
+                  onChange={(e) => handleChange('clienteEmail', e.target.value)}
+                  className={errors.clienteEmail ? 'border-red-500' : ''}
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-600">{errors.email}</p>
+                {errors.clienteEmail && (
+                  <p className="text-sm text-red-600">{errors.clienteEmail}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefone *</Label>
+                <Label htmlFor="telefone">Telefone *</Label>
                 <Input
-                  id="phone"
+                  id="telefone"
                   type="tel"
                   placeholder="(00) 00000-0000"
-                  value={formData.phone}
-                  onChange={(e) => handleChange('phone', e.target.value)}
-                  className={errors.phone ? 'border-red-500' : ''}
+                  value={formData.telefone}
+                  onChange={(e) => handleChange('telefone', e.target.value)}
+                  className={errors.telefone ? 'border-red-500' : ''}
                 />
-                {errors.phone && (
-                  <p className="text-sm text-red-600">{errors.phone}</p>
+                {errors.telefone && (
+                  <p className="text-sm text-red-600">{errors.telefone}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="title">Título do Roteiro *</Label>
+                <Label htmlFor="titulo">Título do Roteiro *</Label>
                 <Input
-                  id="title"
+                  id="titulo"
                   placeholder="O título do seu roteiro"
-                  value={formData.title}
-                  onChange={(e) => handleChange('title', e.target.value)}
-                  className={errors.title ? 'border-red-500' : ''}
+                  value={formData.titulo}
+                  onChange={(e) => handleChange('titulo', e.target.value)}
+                  className={errors.titulo ? 'border-red-500' : ''}
                 />
-                {errors.title && (
-                  <p className="text-sm text-red-600">{errors.title}</p>
+                {errors.titulo && (
+                  <p className="text-sm text-red-600">{errors.titulo}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="content">Conteúdo do Roteiro *</Label>
+                <Label htmlFor="conteudo">Conteúdo do Roteiro *</Label>
                 <Textarea
-                  id="content"
+                  id="conteudo"
                   placeholder="Cole ou digite o conteúdo completo do seu roteiro aqui..."
-                  value={formData.content}
-                  onChange={(e) => handleChange('content', e.target.value)}
-                  className={`min-h-[300px] ${errors.content ? 'border-red-500' : ''}`}
+                  value={formData.conteudo}
+                  onChange={(e) => handleChange('conteudo', e.target.value)}
+                  className={`min-h-[300px] ${errors.conteudo ? 'border-red-500' : ''}`}
                 />
-                {errors.content && (
-                  <p className="text-sm text-red-600">{errors.content}</p>
+                {errors.conteudo && (
+                  <p className="text-sm text-red-600">{errors.conteudo}</p>
                 )}
               </div>
 
