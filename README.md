@@ -45,12 +45,15 @@ O objetivo foi criar uma aplicação completa, com autenticação e controle de 
 
 ###  Backend — Spring Boot
 
+#### ** Observações**
+- A documentação da API estara disponivel no link: http://localhost:5050/swagger-ui/swagger-ui/index.html
+
 #### ** Pré-requisitos**
 - Java 21+
 - Maven ou Gradle
 - PostgreSQL rodando (local ou via Docker)
 
-#### **2️⃣ Configuração**
+#### ** Configuração**
 Crie o banco de dados:
 
 ```sql
