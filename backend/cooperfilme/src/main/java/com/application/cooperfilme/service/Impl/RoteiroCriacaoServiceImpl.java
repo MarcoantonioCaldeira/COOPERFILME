@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class RoteiroCriacaoService {
+public class RoteiroCriacaoServiceImpl {
 
     private final RoteiroRepository roteiroRepository;
     private final ClienteService clienteService;

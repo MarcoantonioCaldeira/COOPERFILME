@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Service
-public class ClienteService implements com.application.cooperfilme.service.ClienteService {
+public class ClienteServiceImpl implements com.application.cooperfilme.service.ClienteService {
 
     @Autowired
     ClienteRepository clienteRepository;

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UsuarioService implements com.application.cooperfilme.service.UsuarioService {
+public class UsuarioServiceImpl implements com.application.cooperfilme.service.UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
