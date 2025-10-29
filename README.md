@@ -1,4 +1,4 @@
-# 🎬 COOPERFILME — Sistema de Análise de Roteiros
+# ScriptMind — Sistema de Análise de Roteiros
 
 Aplicação **Full Stack** desenvolvida como teste técnico, que simula um sistema interno para submissão, triagem, revisão e aprovação de roteiros cinematográficos.  
 O projeto integra **frontend React**, **backend Spring Boot** e **banco PostgreSQL**, com autenticação via **JWT (Spring Security)** e layout moderno baseado em **Tailwind CSS**.
@@ -58,5 +58,6 @@ Crie o banco de dados:
 
 ```sql
 CREATE DATABASE db_cooperfilme;
+
 
 
